@@ -1,5 +1,7 @@
 import React from "react";
+import Carousel from "nuka-carousel";
 /* icons */
+import passArrow from "./assets/icons/pass-arrow.svg"
 import IconSearch from "./assets/icons/icon-search-filled.svg"
 import DefaultUserProfile from "./assets/icons/default-user-profile.svg"
 import RightTriangle from "./assets/icons/right-triangle.svg"
@@ -25,11 +27,13 @@ const GlobalStyle =createGlobalStyle`
   color:white;
   font-family:Arial;
 }
+body{
+  background-color:black;
+}
 `
 const ContainerPag =styled.div`
   width:100%;
-  height:250vh;
-  padding:1.1% 3.9%;
+  padding:1.1% 0 3.1% 3.9% ;
   background-color:black;
 `
 const Header = styled.header`
@@ -155,25 +159,103 @@ const Description = styled.div`
 
 const Highlighted= styled.div`
   width:100%;
-  height:36.1vh;
-  background-color:#0b090a;
+` 
+const SpotlightTitle = styled.h2`
+  font-size:1.1em;
+  margin-bottom:1%;
+`
+const MovieBox = styled.div`
+  width:18.9vw;
+  min-height:20.7vw;
+  padding:2.18%;
+  margin:1.5% 0;
+  border-radius:4px;
+  &:hover{
+    transition:0.2s;
+    background-color:#2C2C2C;
+  }
+`
+const PosterInMovieBox= styled.img`
+  width:100%;
+  border-radius:4px;
+`
+const NameAndLike= styled.div`
+  width:100%;
+  display:flex;
+  margin-bottom:3%;
+  justify-content:space-between;
+` 
+const TitleInMovieBox= styled.h3`
+  display: inline-block;
+  position: relative;
+  font-size:1em;
+  overflow: hidden;
+  white-space: nowrap;  
+  text-overflow: ellipsis;
 
 ` 
+const NoteNumber =styled.p`
+  margin-right:0.4vw;
+`
+const DescriptionMovieBox = styled.p`
+  font-size:0.8em;
+`
+const Arrow = styled.svg`
+  //fill:#fff;
+  opacity:10;
+  transition: 0.3s ease-in-out;
+  cursor: pointer;
+  border-radius:100px;
+  &#Rotate{
+    transform:rotate(180deg);
+  }
+  &:hover{
+    opacity: 1;
+    background-color:rgba(255,255,255,0.2);
+    box-shadow:0 0 100px -3px rgba(255,255,255,0.2);
+  }
+`;
+
+const Figure= styled.figure`
+  position:relative;
+`
+const FavoriteHeartButton = styled.img`
+  width:8%;
+  position:absolute;
+  right:1.5%;
+  top:1.5%;
+`
 // const i = styled.div``
 export default class App extends React.Component{
   state={
-    RecentlySeen:[{poster:Movie2,Name:"Capitão Fantástico", description:"Nas florestas do estado de Washington, um pai cria seus seis filhos longe da civilização, em uma rígida rotina de aventuras. Ele é forçado a deixar o isolamento e leva sua família para encarar o mundo, desafiando sua ideia do que significa ser pai.", },],
-    movies:[
-      {poster:Movie1,Name:"A Fuga das Galinhas", description:"O galo Rocky e a galinha Ginger querem ajudar todas as outras galinhas a fugirem da granja onde vivem em cativeiro.",},
-      {poster:Movie2,Name:"AmarElo", description:"Nos bastidores do show no Theatro Municipal de São Paulo, o rapper e ativista Emicida celebra o grande legado da cultura negra brasileira.", },
+    RecentlySeen:[
       {poster:Movie3,Name:"Capitão Fantástico", description:"Nas florestas do estado de Washington, um pai cria seus seis filhos longe da civilização, em uma rígida rotina de aventuras. Ele é forçado a deixar o isolamento e leva sua família para encarar o mundo, desafiando sua ideia do que significa ser pai.", },
-      {poster:Movie4,Name:"Hoje Eu Quero Voltar Sozinho", description:"Um novo colega de sala transforma a vida do estudante Leonardo, que também é cego, e complica sua amizade com sua melhor amiga.", },
-      {poster:Movie5,Name:"Que Horas Ela Volta", description:"Val é a fiel empregada domestica de uma família rica. Mas a chegada de sua filha gera tensão na casa e faz com que ela comece a questionar esse papel.", },
-      {poster:Movie6,Name:"Rocketman", description:"Em reabilitação, Elton John relembra suas origens humildes, as músicas atemporais e os momentos de inspiração e excesso. Baseado em sua verdadeira história.", },
-      {poster:Movie7,Name:"Sherek", description:"Para resgatar uma princesa das garras de um dragão que cospe fogo, o ogro Shrek se une a um companheiro improvável: um burro brincalhão.", },
-      {poster:Movie8,Name:"Homem Aranha", description:"Após ser picado por uma aranha radioativa, o garoto Miles Morales logo aprende a lançar teias com seus parceiros de um universo alternativo.", },
-      {poster:Movie9,Name:"Um Sonho de Liberdade", description:"Condenado pelo assassinato da esposa e do amante dela, um banqueiro se apega à esperança e à amizade com um detento chamado Red para sobreviver à prisão.", },
-    ]
+    ],
+    moviesList:[
+      {Name:"A Fuga das Galinhas", poster:Movie1, evaluationInLikes:"2/5",description:"O galo Rocky e a galinha Ginger querem ajudar todas as outras galinhas a fugirem da granja onde vivem em cativeiro.",},
+      {poster:Movie2,Name:"AmarElo", evaluationInLikes:"5/5", description:"Nos bastidores do show no Theatro Municipal de São Paulo, o rapper e ativista Emicida celebra o grande legado da cultura negra brasileira.", },
+      {poster:Movie3,Name:"Capitão Fantástico", evaluationInLikes:"4/5", description:"Nas florestas do estado de Washington, um pai cria seus seis filhos longe da civilização, em uma rígida rotina de aventuras. Ele é forçado a deixar o isolamento e leva sua família para encarar o mundo, desafiando sua ideia do que significa ser pai.", },
+      {poster:Movie4,Name:"Hoje Eu Quero Voltar Sozinho", evaluationInLikes:"-", description:"Um novo colega de sala transforma a vida do estudante Leonardo, que também é cego, e complica sua amizade com sua melhor amiga.", },
+      {poster:Movie5,Name:"Que Horas Ela Volta", evaluationInLikes:"-", description:"Val é a fiel empregada domestica de uma família rica. Mas a chegada de sua filha gera tensão na casa e faz com que ela comece a questionar esse papel.", },
+      {poster:Movie6,Name:"Rocketman", evaluationInLikes:"-", description:"Em reabilitação, Elton John relembra suas origens humildes, as músicas atemporais e os momentos de inspiração e excesso. Baseado em sua verdadeira história.", },
+      {poster:Movie7,Name:"Sherek", evaluationInLikes:"4/5", description:"Para resgatar uma princesa das garras de um dragão que cospe fogo, o ogro Shrek se une a um companheiro improvável: um burro brincalhão.", },
+      {poster:Movie8,Name:"Homem Aranha", evaluationInLikes:"3/5", description:"Após ser picado por uma aranha radioativa, o garoto Miles Morales logo aprende a lançar teias com seus parceiros de um universo alternativo.", },
+      {poster:Movie9,Name:"Um Sonho de Liberdade", evaluationInLikes:"4,5/5", description:"Condenado pelo assassinato da esposa e do amante dela, um banqueiro se apega à esperança e à amizade com um detento chamado Red para sobreviver à prisão.", },
+    ],
+    resultMovies:[],
+  }
+  
+  SearchMovies = (event) =>{
+    const {moviesList} = this.state
+    const MoviesFilter = moviesList.filter(item => {
+       if(item.Name.toLowerCase().includes(event.target.value.toLowerCase()) && event.target.value !== ""){
+        return true;
+       }
+    })
+
+    this.setState({
+      resultMovies:MoviesFilter
+    })
   }
   
   render(){
@@ -199,36 +281,111 @@ export default class App extends React.Component{
           </HeaderDiv>
           <HeaderDiv >
             <AddMovies>Adicionar filme</AddMovies>
-            <form>
-              <Search type="text" placeholder="Pesquisar"/>
-            </form>
+              <Search onChange={this.SearchMovies} type="text" placeholder="Pesquisar"/>
             <ConfigUSerProfile>
               <img src={DefaultUserProfile} alt=""/><img src={RightTriangle}/>
             </ConfigUSerProfile>
           </HeaderDiv>
         </Header>
+        <div>
+          <h3>Todos</h3>
+        {this.state.resultMovies.map(item=>(
+                <MovieBox>
+                  <Figure>
+                    <PosterInMovieBox src={item.poster} alt=""/>
+                    <FavoriteHeartButton src={FavoriteHeart} alt="Botão de coração para favoritar."/>
+                  </Figure>
+                  <NameAndLike>
+                  <TitleInMovieBox>{item.Name}</TitleInMovieBox>
+                  <Assessment>
+                    <NoteNumber>{item.evaluationInLikes}</NoteNumber>
+                    <img src={LikeButton} alt="botão com desenho de uma mão com polegar pra cima no estilo minimalista em verde claro."/>
+                  </Assessment>
+                  </NameAndLike>
+                  <DescriptionMovieBox>{item.description}</DescriptionMovieBox>
+                  
+                </MovieBox>
+              ))}
+        </div>
         <Main>
           <RecentlySeen>
             <FeatureMoviePoster src={this.state.RecentlySeen[0].poster} alt=""/>
 
             <InfoMovie>
-            <img src={FavoriteHeart} alt=""/>
+            <img src={FavoriteHeart} alt="Botão de coração para favoritar."/>
             <p>Visto recentemente</p>
             <TitleRecentlySeen>{this.state.RecentlySeen[0].Name}</TitleRecentlySeen>
             <Description>{this.state.RecentlySeen[0].description}</Description>
             <Assessment>
-              <p>4/5</p>
+              <NoteNumber>4/5</NoteNumber>
               <img src={LikeButton} alt=""/>
             </Assessment>
             </InfoMovie>
 
           </RecentlySeen>
           <Highlighted>
-            <h3></h3>
-            
+            <SpotlightTitle>Destaques</SpotlightTitle>
 
+            <Carousel
+            autoplay={true}
+            pauseOnHover={true}
+            autoplayInterval={3500}
+            speed={800}
+            renderCenterLeftControls={({ previousSlide }) => (
+              <Arrow 
+                id="Rotate"
+                onClick={previousSlide}
+                xmlns="http://www.w3.org/2000/svg" 
+                width="68" height="68"
+                viewBox="0 0 68 68"
+                 >
+                <g id="Group_8" data-name="Group 8" transform="translate(-1309 -621)">
+                  <rect id="Box" width="68" height="68" transform="translate(1309 621)" fill="none"/>
+                  <path id="Icon_Keyboard_Arrow_-_Up_Dark" data-name="Icon / Keyboard Arrow - Up / Dark" d="M30.033,20.967,17,7.933,3.967,20.967,0,17,17,0,34,17Z" transform="translate(1353.483 637.15) rotate(90)" fill="#fff"/>
+                </g>
+              </Arrow>
+            )}
+            renderCenterRightControls={({ nextSlide }) => (
+              <Arrow 
+                onClick={nextSlide}
+                xmlns="http://www.w3.org/2000/svg" 
+                width="68" height="68"
+                viewBox="0 0 68 68"
+                 >
+                <g id="Group_8" data-name="Group 8" transform="translate(-1309 -621)">
+                  <rect id="Box" width="68" height="68" transform="translate(1309 621)" fill="none"/>
+                  <path id="Icon_Keyboard_Arrow_-_Up_Dark" data-name="Icon / Keyboard Arrow - Up / Dark" d="M30.033,20.967,17,7.933,3.967,20.967,0,17,17,0,34,17Z" transform="translate(1353.483 637.15) rotate(90)" fill="#fff"/>
+                </g>
+              </Arrow>
+            )}
+            defaultControlsConfig={{
+  nextButtonText: ' ',
+  prevButtonText: ' ',
+  pagingDotsStyle: {
+    fill: 'none'
+  }
+}} adaptiveHeight="false" slidesToShow={5} slidesToScroll={4} scrollMode="page">
+              {this.state.moviesList.map(item=>(
+                <MovieBox>
+                  <Figure>
+                    <PosterInMovieBox src={item.poster} alt=""/>
+                    <FavoriteHeartButton src={FavoriteHeart} alt="Botão de coração para favoritar."/>
+                  </Figure>
+                  <NameAndLike>
+                  <TitleInMovieBox>{item.Name}</TitleInMovieBox>
+                  <Assessment>
+                    <NoteNumber>{item.evaluationInLikes}</NoteNumber>
+                    <img src={LikeButton} alt="botão de coração simbolisando favorito"/>
+                  </Assessment>
+                  </NameAndLike>
+                  <DescriptionMovieBox>{item.description}</DescriptionMovieBox>
+                  
+                </MovieBox>
+              ))}
+            </Carousel>
           </Highlighted>
         </Main>
+        
       </ContainerPag>
     )
   }
